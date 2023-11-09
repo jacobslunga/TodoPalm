@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid()) @map("id")
+  email        String      @unique
+  password     String?
+  imageUrl     String?     @map("image_url")
+  theme        String?     @default("default")
+  name         String?     @map("name")
+  authType     String      @default("email") @map("auth_type")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @map("updated_at")
+  occupation    String?    
+  additionalInfo Json?
+  todos        Todo[]
+  categories   Category[]
+  todoGroups   TodoGroup[]
+}
+
+model Todo {
+  id           String      @id @default(uuid()) @map("id")
+  title        String
+  content      String?
+  isCompleted  Boolean     @default(false) @map("is_completed")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @map("updated_at")
+  userId       String      @map("user_id")
+  categoryId   String?     @map("category_id")
+  deadline     DateTime?   @map("deadline")
+  user         User        @relation(fields: [userId], references: [id])
+  category     Category?   @relation(fields: [categoryId], references: [id])
+  todoGroupId  String?     @map("todo_group_id")
+  todoGroup    TodoGroup?  @relation(fields: [todoGroupId], references: [id])
+}
+
+model TodoGroup {
+  id           String      @id @default(uuid()) @map("id")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  userId       String?     @map("user_id")
+  user         User?       @relation(fields: [userId], references: [id])
+  todos        Todo[]
+  isLocked     Boolean     @default(false) @map("is_locked")
+  status       String      @default("active")
+}
+
+model Category {
+  id           String      @id @default(uuid()) @map("id")
+  name         String
+  createdAt    DateTime    @default(now()) @map("created_at")
+  userId       String      @map("user_id")
+  icon         String?     @map("icon")
+  user         User        @relation(fields: [userId], references: [id])
+  todos        Todo[]
+}
