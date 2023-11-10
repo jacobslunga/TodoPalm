@@ -10,9 +10,7 @@ export async function getMe(req: Request, res: Response) {
     const { id } = req?.user;
 
     const user = await prisma.user.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -21,59 +19,44 @@ export async function getMe(req: Request, res: Response) {
         additionalInfo: true,
         imageUrl: true,
         todoGroups: {
-          orderBy: {
-            createdAt: "desc",
-          },
+          orderBy: { createdAt: "desc" },
           take: 1,
         },
       },
     });
 
     const today = new Date();
-    let todaysTodoGroup = user?.todoGroups[0];
-    const lastTodoGroupDate = todaysTodoGroup?.createdAt;
+    let todaysTodoGroup =
+      user?.todoGroups && user?.todoGroups.length > 0
+        ? user.todoGroups[0]
+        : null;
 
-    if (
-      !lastTodoGroupDate ||
-      lastTodoGroupDate.getDate() !== today.getDate() ||
-      lastTodoGroupDate.getMonth() !== today.getMonth() ||
-      lastTodoGroupDate.getFullYear() !== today.getFullYear()
-    ) {
+    const lastTodoGroupDate = todaysTodoGroup?.createdAt;
+    const isSameDay =
+      lastTodoGroupDate &&
+      lastTodoGroupDate.toDateString() === today.toDateString();
+
+    if (!isSameDay) {
       await prisma.todoGroup.updateMany({
-        where: {
-          userId: id,
-          createdAt: {
-            lt: today,
-          },
-        },
-        data: {
-          status: "inactive",
-        },
+        where: { userId: id, createdAt: { lt: today } },
+        data: { status: "inactive" },
       });
 
       todaysTodoGroup = await prisma.todoGroup.create({
-        data: {
-          userId: id,
-        },
+        data: { userId: id },
       });
     }
 
-    if (!todaysTodoGroup) {
-      return res.status(500).json({ message: "Something went wrong" });
-    }
-
-    const todaysTodos = await prisma.todo.findMany({
-      where: {
-        todoGroupId: todaysTodoGroup.id,
-      },
-      include: {
-        category: true,
-      },
-    });
+    const todaysTodos = todaysTodoGroup
+      ? await prisma.todo.findMany({
+          where: { todoGroupId: todaysTodoGroup.id },
+          include: { category: true },
+        })
+      : [];
 
     const response = {
       ...user,
-      todaysTodoGroup: todaysTodoGroup,
+      todaysTodoGroup,
       todaysTodos,
     };
 
@@ -130,6 +113,7 @@ export async function updateBasicInfo(req: Request, res: Response) {
       name: user.name,
       imageUrl: user.imageUrl,
       id: user.id,
+      occupation: user.occupation,
     });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
