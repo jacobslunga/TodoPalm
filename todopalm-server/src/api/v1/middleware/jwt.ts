@@ -11,7 +11,6 @@ function authenticateJwtRequestToken() {
     const { path } = req;
     const excludedPaths = [
       "/api/v1/users/auth/login",
-      "/api/v1/users/auth/register",
       "/api/v1/users/auth/refresh-token",
       "/api/v1/users/auth/google",
     ];
