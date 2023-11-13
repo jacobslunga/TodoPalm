@@ -93,10 +93,7 @@ const ChooseCategoriesModal: FC<ChooseCategoriesModalProps> = ({
         </p>
 
         <div className="space-y-4">
-          <p
-            className="text-black dark:text-white text-sm font-medium"
-            style={{ color: "#F59E0B" }}
-          >
+          <p className="text-black dark:text-white text-sm font-medium">
             What describes you best?
           </p>
           <OccupationList
@@ -104,10 +101,7 @@ const ChooseCategoriesModal: FC<ChooseCategoriesModalProps> = ({
             setOccupation={setOccupation}
           />
 
-          <p
-            className="text-black dark:text-white text-sm font-medium mt-3"
-            style={{ color: "#F59E0B" }}
-          >
+          <p className="text-black dark:text-white text-sm font-medium mt-3">
             Categories
           </p>
           <div
@@ -119,7 +113,7 @@ const ChooseCategoriesModal: FC<ChooseCategoriesModalProps> = ({
             {categories.map((category) => (
               <li
                 key={category}
-                className="flex flex-row items-center bg-white dark:bg-gray-800 justify-between px-10 grid-flow-col p-2 border border-gray-300 dark:border-gray-600 rounded-full shadow-sm"
+                className="flex flex-row items-center bg-white dark:bg-[rgba(255,255,255,0.1)] justify-between px-10 grid-flow-col p-2 border border-gray-300 dark:border-gray-600 rounded-full shadow-sm"
               >
                 <CategoryIcon
                   iconName={category}

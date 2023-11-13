@@ -83,8 +83,6 @@ const TodoList: FC<TodoListProps> = ({
 
   const OS = getOS();
 
-  console.log(todos);
-
   const testTodos: any = [
     {
       id: "1",
@@ -129,7 +127,11 @@ const TodoList: FC<TodoListProps> = ({
   ];
 
   return (
-    <div className="h-[80vh] absolute bottom-0 px-[5%] sm:px-[10%] md:px-[20%] lg:px-[25%] w-full items-center justify-start flex flex-col">
+    <div
+      className={`h-[80vh] absolute bottom-0 px-[5%] sm:px-[10%] md:px-[20%] lg:px-[25%] w-full ${
+        todos.length === 0 ? "items-start" : "items-center"
+      } justify-start flex flex-col`}
+    >
       <div className="w-full flex flex-row items-center justify-between">
         <h4 className="font-semibold underline text-lg sm:text-xl md:text-xl lg:text-2xl text-black dark:text-white">
           {getFormattedDate()}

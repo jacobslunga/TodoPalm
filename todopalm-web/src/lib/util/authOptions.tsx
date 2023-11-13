@@ -34,7 +34,6 @@ export const authOptions: NextAuthOptions = {
             "Content-Type": "application/json",
           },
         });
-        console.log(user);
 
         if (user.status === 401) {
           return Promise.resolve(null);
@@ -53,6 +52,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn(data) {
       const { account, user } = data;
+      console.log("Sign in data:", data);
 
       if (account?.provider === "credentials") {
         return true;
