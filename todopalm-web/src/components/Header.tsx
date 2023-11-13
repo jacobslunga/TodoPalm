@@ -42,7 +42,7 @@ const Tooltip = ({
 
 const Header: FC<HeaderProps> = ({ user }) => {
   return (
-    <div className="fixed w-1/2 py-5 top-0 bg-transparent flex flex-row items-center justify-between">
+    <div className="fixed w-full px-[5%] sm:px-[10%] md:px-[20%] lg:px-[25%] py-5 top-0 bg-transparent flex flex-row items-center justify-between">
       <Image
         src="/todopalm-logo.png"
         alt="TodoPalm"
@@ -57,8 +57,8 @@ const Header: FC<HeaderProps> = ({ user }) => {
               <Image
                 src={user.imageUrl}
                 alt="User"
-                width={25}
-                height={25}
+                width={30}
+                height={30}
                 className="rounded-full"
               />
             ) : (
@@ -76,7 +76,10 @@ const Header: FC<HeaderProps> = ({ user }) => {
         <div className="ml-5">
           <Tooltip message="Settings">
             <button>
-              <Settings className="text-black dark:text-white" size={25} />
+              <Settings
+                className="text-black dark:text-white hover:rotate-[15deg] transition-transform duration-200 ease-in-out"
+                size={25}
+              />
             </button>
           </Tooltip>
         </div>

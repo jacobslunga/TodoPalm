@@ -166,7 +166,7 @@ const ChooseCategoriesModal: FC<ChooseCategoriesModalProps> = ({
             {!loading ? (
               <ArrowRight className="opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1 ml-1 duration-300 ease-in-out" />
             ) : (
-              <span className="loading loading-dots loading-sm ml-1"></span>
+              <span className="loading loading-dots loading-xs ml-2"></span>
             )}
           </button>
         </div>

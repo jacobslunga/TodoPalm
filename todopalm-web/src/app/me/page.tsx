@@ -4,7 +4,8 @@ import CreateTodoModal from "@/components/Todos/CreateTodoModal";
 import TodoList from "@/components/Todos/TodoList";
 import { authOptions } from "@/lib/util/authOptions";
 import { getServerSession } from "next-auth";
-import { GitHub } from "react-feather";
+import Link from "next/link";
+import { ExternalLink, GitHub } from "react-feather";
 
 export default async function TodoGroup() {
   const session: any = await getServerSession(authOptions);
@@ -44,7 +45,15 @@ export default async function TodoGroup() {
         </a>
       </div>
 
-      <CreateTodoModal user={userData} />
+      <Link
+        href="/feeback"
+        className="z-50 absolute bottom-5 left-5 text-sm flex flex-row items-center justify-center"
+      >
+        Got some feedback?
+        <ExternalLink className="text-blue-500 brush ml-1" size={15} />
+      </Link>
+
+      <CreateTodoModal user={userData} accessToken={session.accessToken} />
     </main>
   );
 }

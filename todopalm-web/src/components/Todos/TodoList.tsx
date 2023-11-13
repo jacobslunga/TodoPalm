@@ -1,12 +1,20 @@
 "use client";
 
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import Tooltip from "@/lib/util/Tooltip";
 import { FC } from "react";
+import { Check, Filter, MoreVertical, PlusCircle } from "react-feather";
 
 interface Todo {
   id: string;
   title: string;
   content: string;
+  category: {
+    id: string;
+    name: string;
+    icon: string;
+  };
+  isCompleted: boolean;
 }
 
 interface TodoListProps {
@@ -75,11 +83,86 @@ const TodoList: FC<TodoListProps> = ({
 
   const OS = getOS();
 
+  console.log(todos);
+
+  const testTodos: any = [
+    {
+      id: "1",
+      title: "Test todo 1",
+      content: "Test todo content 1",
+      category: {
+        id: "1",
+        name: "Test category 1",
+        icon: "test icon 1",
+      },
+    },
+    {
+      id: "2",
+      title: "Test todo 2",
+      content: "Test todo content 2",
+      category: {
+        id: "2",
+        name: "Test category 2",
+        icon: "test icon 2",
+      },
+    },
+    {
+      id: "3",
+      title: "Test todo 3",
+      content: "Test todo content 3",
+      category: {
+        id: "3",
+        name: "Test category 3",
+        icon: "test icon 3",
+      },
+    },
+    {
+      id: "4",
+      title: "Test todo 4",
+      content: "Test todo content 4",
+      category: {
+        id: "4",
+        name: "Test",
+        icon: "test icon 4",
+      },
+    },
+  ];
+
   return (
-    <div className="h-[80vh] absolute bottom-0 overflow-auto w-1/2 items-start justify-start flex flex-col">
-      <h4 className="font-semibold underline text-2xl text-black dark:text-white">
-        {getFormattedDate()}
-      </h4>
+    <div className="h-[80vh] absolute bottom-0 px-[5%] sm:px-[10%] md:px-[20%] lg:px-[25%] w-full items-center justify-start flex flex-col">
+      <div className="w-full flex flex-row items-center justify-between">
+        <h4 className="font-semibold underline text-lg sm:text-xl md:text-xl lg:text-2xl text-black dark:text-white">
+          {getFormattedDate()}
+        </h4>
+
+        <div className="flex flex-row items-center justify-center">
+          <div className="mr-5">
+            <Tooltip message="Add todo">
+              <button
+                className="flex flex-row items-center justify-center"
+                onClick={() => {
+                  const modal = document.getElementById(
+                    "create_todo_modal"
+                  ) as any;
+                  modal?.showModal();
+                }}
+              >
+                <PlusCircle className="text-black dark:text-white m-0 p-0 hover:rotate-[15deg] transition-all duration-200 ease-in-out" />
+              </button>
+            </Tooltip>
+          </div>
+          {todos.length > 0 && (
+            <Tooltip message="Filter todos">
+              <button>
+                <Filter
+                  size={20}
+                  className="text-black dark:text-white m-0 p-0"
+                />
+              </button>
+            </Tooltip>
+          )}
+        </div>
+      </div>
 
       {todos.length === 0 ? (
         <>
@@ -113,7 +196,74 @@ const TodoList: FC<TodoListProps> = ({
           </div>
         </>
       ) : (
-        <></>
+        <>
+          <div className="flex flex-col items-start overflow-x-hidden overflow-scroll justify-start w-full">
+            {todos.map((todo, i) => (
+              <div
+                className={`flex flex-row items-center justify-between w-full ${
+                  i === 0 ? "mt-10" : "mt-5"
+                } ${i === todos.length - 1 ? "mb-20" : "mb-0"}`}
+                key={todo.id}
+              >
+                <div className="flex flex-row items-start justify-start w-full">
+                  <div className="flex flex-col items-center justify-center">
+                    <p
+                      className={`text-[rgba(0,0,0,0.6)] dark:text-gray-400 font-semibold text-lg items-center justify-center`}
+                    >
+                      {i + 1}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`${
+                      todo.isCompleted && "line-through"
+                    } flex flex-col items-start justify-center ml-3`}
+                  >
+                    <h4 className="font-semibold text-black dark:text-white text-lg">
+                      {todo.title}
+                    </h4>
+                    <p className="text-xs text-black dark:text-white">
+                      {todo.content}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-center justify-center">
+                  <button className="border border-gray-400 dark:border-[rgba(255,255,255,0.2)] rounded-lg p-2 group">
+                    <Check
+                      className={`${
+                        !todo.isCompleted
+                          ? "group-hover:opacity-100"
+                          : "opacity-0 group-hover:opacity-0"
+                      }
+                      text-green-500 opacity-0 dark:text-green-400 transition-all duration-200 ease-in-out m-0 p-0
+                      `}
+                      size={15}
+                    />
+                  </button>
+                  <div className="dropdown dropdown-left">
+                    <MoreVertical
+                      tabIndex={0}
+                      size={20}
+                      className="text-[rgba(0,0,0,0.5)] cursor-pointer hover:text-black transition-colors ml-5 duration-200 ease-linear dark:text-[rgba(255,255,255,0.5)] dark:hover:text-white m-0 p-0"
+                    />
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box"
+                    >
+                      <li>
+                        <a>Item 1</a>
+                      </li>
+                      <li>
+                        <a>Item 2</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

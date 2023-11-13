@@ -41,12 +41,36 @@ export async function createTodo(
   try {
     const { title, content, categoryId } = req.body;
 
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user?.id,
+      },
+      select: {
+        todoGroups: {
+          take: 1,
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    const todaysTodoGroup =
+      user?.todoGroups && user?.todoGroups.length > 0
+        ? user?.todoGroups[0]
+        : null;
+
     const data: any = {
       title,
       content,
       user: {
         connect: {
           id: req.user?.id,
+        },
+      },
+      todoGroup: {
+        connect: {
+          id: todaysTodoGroup?.id,
         },
       },
     };

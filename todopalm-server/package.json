@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=dev nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "test": "dotenv -e .env.test -- jest --watch"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "test": "jest --watch"
   },
   "dependencies": {
     "@prisma/client": "5.5.2",

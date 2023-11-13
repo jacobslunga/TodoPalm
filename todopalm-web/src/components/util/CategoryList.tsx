@@ -1,40 +1,28 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { FC, Fragment } from "react";
-import { Check, Link2 } from "react-feather";
+import { Check, Hash } from "react-feather";
 
-interface OccupationListProps {
-  occupation: any;
-  setOccupation: any;
+interface CategoryListProps {
+  category: any;
+  setCategory: any;
+  user: any;
 }
 
-const occupations = [
-  { occupation: "Student" },
-  { occupation: "Developer" },
-  { occupation: "Designer" },
-  { occupation: "Educator" },
-  { occupation: "Entrepreneur" },
-  { occupation: "Researcher" },
-  { occupation: "Healthcare Professional" },
-  { occupation: "Engineer" },
-  { occupation: "Artist" },
-  { occupation: "Freelancer" },
-  { occupation: "Other" },
-];
-
-const OccupationList: FC<OccupationListProps> = ({
-  occupation,
-  setOccupation,
+const CategoryList: FC<CategoryListProps> = ({
+  category,
+  setCategory,
+  user,
 }) => {
   return (
     <div className="w-72">
-      <Listbox value={occupation} onChange={(e) => setOccupation(e)}>
+      <Listbox value={category} onChange={(e) => setCategory(e)}>
         <div className="relative mt-1">
           <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white dark:bg-black py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
             <span className="block truncate text-black dark:text-white">
-              {occupation.occupation}
+              {category}
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <Link2 className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              <Hash className="h-5 w-5 text-gray-400" aria-hidden="true" />
             </span>
           </Listbox.Button>
           <Transition
@@ -44,7 +32,7 @@ const OccupationList: FC<OccupationListProps> = ({
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-black py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-              {occupations.map((occupation, idx) => (
+              {user.categories.map((category: any, idx: number) => (
                 <Listbox.Option
                   key={idx}
                   className={({ active }) =>
@@ -54,7 +42,7 @@ const OccupationList: FC<OccupationListProps> = ({
                         : "text-gray-900 dark:text-gray-100"
                     }`
                   }
-                  value={occupation}
+                  value={category.name}
                 >
                   {({ selected }) => (
                     <>
@@ -63,7 +51,7 @@ const OccupationList: FC<OccupationListProps> = ({
                           selected ? "font-medium" : "font-normal"
                         }`}
                       >
-                        {occupation.occupation}
+                        {category.name}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-green-300">
@@ -82,4 +70,4 @@ const OccupationList: FC<OccupationListProps> = ({
   );
 };
 
-export default OccupationList;
+export default CategoryList;

@@ -34,6 +34,7 @@ export const authOptions: NextAuthOptions = {
             "Content-Type": "application/json",
           },
         });
+        console.log(user);
 
         if (user.status === 401) {
           return Promise.resolve(null);
