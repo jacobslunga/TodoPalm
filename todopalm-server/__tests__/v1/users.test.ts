@@ -1,5 +1,4 @@
 /**
-
  * This file contains tests for the users endpoint of the TodoPalm server.
  * It tests the GET /api/v1/users/me endpoint and the function to generate a mock JWT token.
  * @packageDocumentation

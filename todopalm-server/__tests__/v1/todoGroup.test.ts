@@ -1,13 +1,13 @@
+import jwt from "jsonwebtoken";
 import request from "supertest";
 import prismaMock from "../../singleton";
 import app from "../../src/app";
-import jwt from "jsonwebtoken"; 
 
 /**
-  * Generates a mock JWT token for the given user ID.
-  * @param userId - The ID of the user to generate the token for.
-  * @returns The generated JWT token.
-  */
+ * Generates a mock JWT token for the given user ID.
+ * @param userId - The ID of the user to generate the token for.
+ * @returns The generated JWT token.
+ */
 function generateMockToken(userId: string): string {
   const jwtSecret = process.env.ACCESS_TOKEN_SECRET as string;
   return jwt.sign({ sub: userId }, jwtSecret, { expiresIn: "1h" });

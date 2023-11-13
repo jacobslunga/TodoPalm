@@ -1,13 +1,13 @@
+import jwt from "jsonwebtoken";
 import request from "supertest";
 import prismaMock from "../../singleton";
 import app from "../../src/app";
-import jwt from "jsonwebtoken"; 
 
 /**
-  * Generates a mock JWT token for the given user ID.
-  * @param userId - The ID of the user to generate the token for.
-  * @returns The generated JWT token.
-  */
+ * Generates a mock JWT token for the given user ID.
+ * @param userId - The ID of the user to generate the token for.
+ * @returns The generated JWT token.
+ */
 function generateMockToken(userId: string): string {
   const jwtSecret = process.env.ACCESS_TOKEN_SECRET as string;
   return jwt.sign({ sub: userId }, jwtSecret, { expiresIn: "1h" });
@@ -48,8 +48,8 @@ describe("Categories", () => {
     const mockToken = generateMockToken("1");
 
     const response = await request(app)
-    .get("/api/v1/categories")
-    .set("Authorization", `Bearer ${mockToken}`);
+      .get("/api/v1/categories")
+      .set("Authorization", `Bearer ${mockToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -75,8 +75,8 @@ describe("Categories", () => {
     const mockToken = generateMockToken("1");
 
     const response = await request(app)
-    .get("/api/v1/categories/1")
-    .set("Authorization", `Bearer ${mockToken}`);
+      .get("/api/v1/categories/1")
+      .set("Authorization", `Bearer ${mockToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -92,15 +92,17 @@ describe("Categories", () => {
     prismaMock.category.createMany.mockResolvedValue({ count: 1 });
 
     const mockToken = generateMockToken("1");
-    const categories = [{
-      name: "Test Category",
-      icon: "test",
-    }];
+    const categories = [
+      {
+        name: "Test Category",
+        icon: "test",
+      },
+    ];
 
     const response = await request(app)
-    .post("/api/v1/categories")
-    .send({categories})
-    .set("Authorization", `Bearer ${mockToken}`);
+      .post("/api/v1/categories")
+      .send({ categories })
+      .set("Authorization", `Bearer ${mockToken}`);
 
     expect(response.status).toBe(201);
     expect(response.body).toEqual({ count: 1 });
