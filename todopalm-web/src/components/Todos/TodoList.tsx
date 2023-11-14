@@ -2,6 +2,7 @@
 
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import Tooltip from "@/lib/util/Tooltip";
+import { shouldBeBlackText } from "@/lib/util/theme";
 import { FC } from "react";
 import { Check, Filter, MoreVertical, PlusCircle } from "react-feather";
 
@@ -23,6 +24,7 @@ interface TodoListProps {
     id: string;
     name: string;
     imageUrl: string;
+    theme: string;
   };
 }
 
@@ -74,7 +76,7 @@ const getOS = () => {
 
 const TodoList: FC<TodoListProps> = ({
   todos,
-  user: { id, name, imageUrl },
+  user: { id, name, imageUrl, theme },
 }) => {
   useKeyboardShortcut("d", () => {
     const modal = document.getElementById("create_todo_modal") as any;
@@ -83,48 +85,8 @@ const TodoList: FC<TodoListProps> = ({
 
   const OS = getOS();
 
-  const testTodos: any = [
-    {
-      id: "1",
-      title: "Test todo 1",
-      content: "Test todo content 1",
-      category: {
-        id: "1",
-        name: "Test category 1",
-        icon: "test icon 1",
-      },
-    },
-    {
-      id: "2",
-      title: "Test todo 2",
-      content: "Test todo content 2",
-      category: {
-        id: "2",
-        name: "Test category 2",
-        icon: "test icon 2",
-      },
-    },
-    {
-      id: "3",
-      title: "Test todo 3",
-      content: "Test todo content 3",
-      category: {
-        id: "3",
-        name: "Test category 3",
-        icon: "test icon 3",
-      },
-    },
-    {
-      id: "4",
-      title: "Test todo 4",
-      content: "Test todo content 4",
-      category: {
-        id: "4",
-        name: "Test",
-        icon: "test icon 4",
-      },
-    },
-  ];
+  const userTheme = theme;
+  const blackText = shouldBeBlackText(userTheme);
 
   return (
     <div
@@ -133,7 +95,13 @@ const TodoList: FC<TodoListProps> = ({
       } justify-start flex flex-col`}
     >
       <div className="w-full flex flex-row items-center justify-between">
-        <h4 className="font-semibold underline text-lg sm:text-xl md:text-xl lg:text-2xl text-black dark:text-white">
+        <h4
+          className={`font-semibold underline text-lg sm:text-xl md:text-xl lg:text-2xl ${
+            userTheme === "default"
+              ? "text-black dark:text-white"
+              : `${blackText ? "text-black" : "text-white"}`
+          }`}
+        >
           {getFormattedDate()}
         </h4>
 
@@ -149,7 +117,13 @@ const TodoList: FC<TodoListProps> = ({
                   modal?.showModal();
                 }}
               >
-                <PlusCircle className="text-black dark:text-white m-0 p-0 hover:rotate-[15deg] transition-all duration-200 ease-in-out" />
+                <PlusCircle
+                  className={`${
+                    userTheme === "default"
+                      ? "text-black dark:text-white"
+                      : `${blackText ? "text-black" : "text-white"}`
+                  } m-0 p-0 hover:rotate-[15deg] transition-all duration-200 ease-in-out`}
+                />
               </button>
             </Tooltip>
           </div>
@@ -158,7 +132,11 @@ const TodoList: FC<TodoListProps> = ({
               <button>
                 <Filter
                   size={20}
-                  className="text-black dark:text-white m-0 p-0"
+                  className={`${
+                    userTheme === "default"
+                      ? "text-black dark:text-white"
+                      : `${blackText ? "text-black" : "text-white"}`
+                  } m-0 p-0`}
                 />
               </button>
             </Tooltip>
@@ -168,7 +146,17 @@ const TodoList: FC<TodoListProps> = ({
 
       {todos.length === 0 ? (
         <>
-          <p className="font-lyon mt-2 text-lg text-[rgba(0,0,0,0.5)] dark:text-[rgba(255,255,255,0.5)]">
+          <p
+            className={`font-lyon mt-2 text-lg ${
+              userTheme === "default"
+                ? "text-[rgba(0,0,0,0.5)] dark:text-[rgba(255,255,255,0.5)]"
+                : `${
+                    blackText
+                      ? "text-[rgba(0,0,0,0.5)]"
+                      : "text-[rgba(255,255,255,0.5)]"
+                  }`
+            }`}
+          >
             Let's get started! Click the button below to create your first todo
             for today
           </p>
@@ -181,19 +169,36 @@ const TodoList: FC<TodoListProps> = ({
                 ) as any;
                 modal?.showModal();
               }}
-              className="rounded-full text-sm bg-black dark:bg-white shadow-lg px-4 py-3 text-white dark:text-black font-semibold"
+              className={`rounded-full text-sm ${
+                userTheme === "default"
+                  ? "text-white bg-black dark:text-black dark:bg-white"
+                  : `${
+                      blackText ? "text-white bg-black" : "text-black bg-white"
+                    }`
+              } shadow-lg px-4 py-3 font-semibold`}
             >
               Create Todo
             </button>
 
-            <p className="text-gray-300 dark:text-gray-700 ml-5 text-xs">or</p>
+            <p
+              className={`ml-5 text-xs ${
+                userTheme === "default"
+                  ? "text-gray-500 dark:text-gray-600"
+                  : `${blackText ? "text-gray-500" : "text-gray-600"}`
+              }`}
+            >
+              or
+            </p>
 
-            <p className="text-gray-400 dark:text-gray-500 ml-5 text-xs">
-              You can always press{" "}
-              <kbd className="kbd kbd-xs">
-                {OS === "MacOS" ? "Cmd" : "Ctrl"}
-              </kbd>{" "}
-              + <kbd className="kbd kbd-xs">D</kbd> to toggle the todo.
+            <p
+              className={`${
+                userTheme === "default"
+                  ? "text-gray-500 dark:text-gray-600"
+                  : `${blackText ? "text-gray-500" : "text-gray-600"}`
+              } ml-5 text-xs`}
+            >
+              You can always press <kbd className="kbd kbd-xs">Cmd/Ctrl</kbd> +{" "}
+              <kbd className="kbd kbd-xs">D</kbd> to toggle the todo.
             </p>
           </div>
         </>

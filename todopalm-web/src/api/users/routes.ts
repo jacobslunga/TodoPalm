@@ -3,4 +3,5 @@ export const USER_ROUTES = {
   UPDATE: "/users/me",
   DELETE: "/users/me",
   UPDATE_BASIC_INFO: "/users/me/basic-info",
+  SET_THEME: "/users/me/set-theme",
 };

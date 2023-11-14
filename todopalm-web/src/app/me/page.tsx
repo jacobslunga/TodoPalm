@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import CreateTodoModal from "@/components/Todos/CreateTodoModal";
 import TodoList from "@/components/Todos/TodoList";
 import { authOptions } from "@/lib/util/authOptions";
+import { shouldBeBlackText } from "@/lib/util/theme";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { ExternalLink, GitHub } from "react-feather";
@@ -12,12 +13,23 @@ export default async function TodoGroup() {
 
   const userData = await userService.getOrCreate(session.accessToken);
 
+  const userTheme = userData.theme;
+  const blackText = shouldBeBlackText(userTheme);
+
   return (
-    <main className="flex min-h-screen flex-col bg-light_bg dark:bg-dark_bg items-center justify-center">
+    <main
+      className={`flex min-h-screen flex-col ${
+        userData.theme === "default"
+          ? "bg-light_bg dark:bg-dark_bg"
+          : `bg-${userTheme}`
+      } items-center justify-center`}
+    >
       <Header
         user={{
           imageUrl: userData.imageUrl,
+          theme: userData.theme,
         }}
+        accessToken={session.accessToken}
       />
 
       <TodoList
@@ -26,11 +38,16 @@ export default async function TodoGroup() {
           id: userData.id,
           name: userData.name,
           imageUrl: userData.imageUrl,
+          theme: userData.theme,
         }}
       />
 
       <div
-        className="absolute bottom-5 right-5 flex flex-row items-center justify-center text-black dark:text-white"
+        className={`absolute bottom-5 right-5 flex flex-row items-center justify-center ${
+          userTheme === "default"
+            ? "text-black dark:text-white"
+            : `${blackText ? "text-black" : "text-white"}`
+        }`}
         style={{ fontSize: "0.8rem" }}
       >
         Made with ❤️ by{" "}
@@ -41,13 +58,24 @@ export default async function TodoGroup() {
           className="text-blue-500 brush ml-1 flex flex-row items-center justify-center"
         >
           @jacobslunga
-          <GitHub className="text-black dark:text-white ml-2" size={15} />
+          <GitHub
+            className={`${
+              userTheme === "default"
+                ? "text-black dark:text-white"
+                : `${blackText ? "text-black" : "text-white"}`
+            } ml-2`}
+            size={15}
+          />
         </a>
       </div>
 
       <Link
         href="/feeback"
-        className="z-50 absolute bottom-5 left-5 text-sm flex flex-row items-center justify-center"
+        className={`z-50 absolute bottom-5 left-5 text-sm flex flex-row items-center justify-center ${
+          userTheme === "default"
+            ? "text-black dark:text-white"
+            : `${blackText ? "text-black" : "text-white"}`
+        }`}
       >
         Got some feedback?
         <ExternalLink className="text-blue-500 brush ml-1" size={15} />

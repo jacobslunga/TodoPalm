@@ -37,7 +37,29 @@ async function updateBasicInfo(accessToken: string, occupation: string) {
   }
 }
 
+async function setTheme(accessToken: string, theme: string) {
+  try {
+    const res = await api.put(
+      USER_ROUTES.SET_THEME,
+      {
+        theme,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export const userService = {
   getOrCreate,
   updateBasicInfo,
+  setTheme,
 };

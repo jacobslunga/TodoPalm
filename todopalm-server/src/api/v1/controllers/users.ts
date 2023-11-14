@@ -18,6 +18,7 @@ export async function getMe(req: Request, res: Response) {
         occupation: true,
         additionalInfo: true,
         imageUrl: true,
+        theme: true,
         todoGroups: {
           orderBy: { createdAt: "desc" },
           take: 1,

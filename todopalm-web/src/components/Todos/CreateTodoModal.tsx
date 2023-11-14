@@ -17,6 +17,8 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
     user.categories.length > 0 ? user.categories[0].name : ""
   );
 
+  const userTheme = user.theme;
+
   const [loading, setLoading] = useState(false);
 
   const isDisabled = title.length === 0 || content.length === 0;
@@ -35,7 +37,6 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
     };
 
     const res = await todoService.createTodo(accessToken, todoData);
-    console.log(res);
     setLoading(false);
 
     setCategory("");
@@ -45,12 +46,43 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
     modal?.close();
   };
 
+  const getThemeClass = (theme: string) => {
+    switch (theme) {
+      case "coffee-bg":
+        return "bg-coffee-bg";
+      case "forest-bg":
+        return "bg-forest-bg";
+      case "ocean-bg":
+        return "bg-ocean-bg";
+      case "desert-bg":
+        return "bg-desert-bg";
+      case "urban-bg":
+        return "bg-urban-bg";
+      case "sakura-bg":
+        return "bg-sakura-bg";
+      case "polar-bg":
+        return "bg-polar-bg";
+      case "vintage-bg":
+        return "bg-vintage-bg";
+      default:
+        return "bg-default";
+    }
+  };
+
   return (
     <dialog
       id="create_todo_modal"
       className="modal modal-bottom sm:modal-middle"
     >
-      <div className="modal-box bg-white min-h-2/3 dark:bg-[#1B1C1D] border dark:border-[rgba(255,255,255,0.1)]">
+      <div className="bg-coffee-bg bg-forest-bg bg-ocean-bg bg-desert-bg bg-urban-bg bg-sakura-bg bg-polar-bg bg-vintage-bg hidden"></div>
+
+      <div
+        className={`modal-box ${
+          user.theme === "default"
+            ? "bg-white dark:bg-[#1B1C1D] dark:border-[rgba(255,255,255,0.1)]"
+            : `${getThemeClass(user.theme)}`
+        } min-h-2/3 border`}
+      >
         <div className="flex flex-row items-center justify-between">
           <h2 className="text-2xl font-semibold text-black dark:text-white mb-4">
             Create Todo
