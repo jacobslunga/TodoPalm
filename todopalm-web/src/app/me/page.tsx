@@ -22,7 +22,7 @@ export default async function TodoGroup() {
         userData.theme === "default"
           ? "bg-light_bg dark:bg-dark_bg"
           : `bg-${userTheme}`
-      } items-center justify-center`}
+      } transition-colors duration-200 items-center justify-center`}
     >
       <Header
         user={{

@@ -1,7 +1,7 @@
 "use client";
 
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
-import Tooltip from "@/lib/util/Tooltip";
+import Tooltip from "@/components/util/Tooltip";
 import { shouldBeBlackText } from "@/lib/util/theme";
 import { FC } from "react";
 import { Check, Filter, MoreVertical, PlusCircle } from "react-feather";
@@ -54,26 +54,6 @@ function getFormattedDate(): string {
   return `${dayName} ${date} ${monthName} ${year}`;
 }
 
-const getOS = () => {
-  if (typeof window !== "undefined") {
-    const userAgent = navigator.userAgent;
-
-    if (/Win(dows)?/.test(userAgent)) {
-      return "Windows";
-    }
-
-    if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(userAgent)) {
-      return "MacOS";
-    }
-
-    if (/Linux/.test(userAgent)) {
-      return "Linux";
-    }
-  }
-
-  return "Unknown";
-};
-
 const TodoList: FC<TodoListProps> = ({
   todos,
   user: { id, name, imageUrl, theme },
@@ -82,8 +62,6 @@ const TodoList: FC<TodoListProps> = ({
     const modal = document.getElementById("create_todo_modal") as any;
     modal?.showModal();
   });
-
-  const OS = getOS();
 
   const userTheme = theme;
   const blackText = shouldBeBlackText(userTheme);
@@ -107,7 +85,7 @@ const TodoList: FC<TodoListProps> = ({
 
         <div className="flex flex-row items-center justify-center">
           <div className="mr-5">
-            <Tooltip message="Add todo">
+            <Tooltip message="Create todo">
               <button
                 className="flex flex-row items-center justify-center"
                 onClick={() => {
@@ -183,8 +161,8 @@ const TodoList: FC<TodoListProps> = ({
             <p
               className={`ml-5 text-xs ${
                 userTheme === "default"
-                  ? "text-gray-500 dark:text-gray-600"
-                  : `${blackText ? "text-gray-500" : "text-gray-600"}`
+                  ? "text-gray-500 dark:text-gray-300"
+                  : `${blackText ? "text-gray-500" : "text-gray-300"}`
               }`}
             >
               or
@@ -193,8 +171,8 @@ const TodoList: FC<TodoListProps> = ({
             <p
               className={`${
                 userTheme === "default"
-                  ? "text-gray-500 dark:text-gray-600"
-                  : `${blackText ? "text-gray-500" : "text-gray-600"}`
+                  ? "text-gray-500 dark:text-gray-300"
+                  : `${blackText ? "text-gray-500" : "text-gray-300"}`
               } ml-5 text-xs`}
             >
               You can always press <kbd className="kbd kbd-xs">Cmd/Ctrl</kbd> +{" "}
@@ -204,7 +182,7 @@ const TodoList: FC<TodoListProps> = ({
         </>
       ) : (
         <>
-          <div className="flex flex-col items-start overflow-x-hidden overflow-scroll justify-start w-full">
+          <div className="flex flex-col items-start overflow-x-hidden overflow-auto justify-start w-full">
             {todos.map((todo, i) => (
               <div
                 className={`flex flex-row items-center justify-between w-full ${

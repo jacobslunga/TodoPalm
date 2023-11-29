@@ -1,6 +1,8 @@
 "use client";
 
 import { todoService } from "@/api/todos";
+import { shouldBeBlackText } from "@/lib/util/theme";
+import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
 import { X } from "react-feather";
 import CategoryList from "../util/CategoryList";
@@ -11,6 +13,8 @@ interface CreateTodoModalProps {
 }
 
 const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
+  const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState(
@@ -18,6 +22,7 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
   );
 
   const userTheme = user.theme;
+  const blackText = shouldBeBlackText(userTheme);
 
   const [loading, setLoading] = useState(false);
 
@@ -36,37 +41,16 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
         .id as string,
     };
 
-    const res = await todoService.createTodo(accessToken, todoData);
+    await todoService.createTodo(accessToken, todoData);
     setLoading(false);
 
     setCategory("");
     setTitle("");
     setContent("");
 
-    modal?.close();
-  };
+    router.refresh();
 
-  const getThemeClass = (theme: string) => {
-    switch (theme) {
-      case "coffee-bg":
-        return "bg-coffee-bg";
-      case "forest-bg":
-        return "bg-forest-bg";
-      case "ocean-bg":
-        return "bg-ocean-bg";
-      case "desert-bg":
-        return "bg-desert-bg";
-      case "urban-bg":
-        return "bg-urban-bg";
-      case "sakura-bg":
-        return "bg-sakura-bg";
-      case "polar-bg":
-        return "bg-polar-bg";
-      case "vintage-bg":
-        return "bg-vintage-bg";
-      default:
-        return "bg-default";
-    }
+    modal?.close();
   };
 
   return (
@@ -74,31 +58,45 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
       id="create_todo_modal"
       className="modal modal-bottom sm:modal-middle"
     >
-      <div className="bg-coffee-bg bg-forest-bg bg-ocean-bg bg-desert-bg bg-urban-bg bg-sakura-bg bg-polar-bg bg-vintage-bg hidden"></div>
-
       <div
-        className={`modal-box ${
-          user.theme === "default"
+        className={`modal-box border-none ${
+          userTheme === "default"
             ? "bg-white dark:bg-[#1B1C1D] dark:border-[rgba(255,255,255,0.1)]"
-            : `${getThemeClass(user.theme)}`
+            : `bg-${userTheme}`
         } min-h-2/3 border`}
       >
         <div className="flex flex-row items-center justify-between">
-          <h2 className="text-2xl font-semibold text-black dark:text-white mb-4">
+          <h2
+            className={`font-semibold underline text-lg sm:text-xl md:text-xl lg:text-2xl ${
+              userTheme === "default"
+                ? "text-black dark:text-white"
+                : `${blackText ? "text-black" : "text-white"}`
+            }`}
+          >
             Create Todo
           </h2>
 
           <form method="dialog">
             <button onClick={() => {}}>
-              <X className="text-black dark:text-white m-0 p-0" size={20} />
+              <X
+                className={`font-semibold underline text-lg sm:text-xl md:text-xl lg:text-2xl ${
+                  userTheme === "default"
+                    ? "text-black dark:text-white"
+                    : `${blackText ? "text-black" : "text-white"}`
+                } p-0 m-0`}
+              />
             </button>
           </form>
         </div>
         {user.categories.length > 0 && (
-          <div className="">
+          <div className="flex flex-col mt-5">
             <label
               htmlFor="category"
-              className="text-xs font-medium text-black dark:text-white mb-1"
+              className={`${
+                userTheme === "default"
+                  ? "text-black dark:text-white"
+                  : `${blackText ? "text-black" : "text-white"}`
+              } p-0 m-0 text-lg font-normal mb-1`}
             >
               Category
             </label>
@@ -113,7 +111,11 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
         <div className="flex flex-col mt-5">
           <label
             htmlFor="email"
-            className="text-xl font-medium text-black dark:text-white mb-1"
+            className={`${
+              userTheme === "default"
+                ? "text-black dark:text-white"
+                : `${blackText ? "text-black" : "text-white"}`
+            } p-0 m-0 text-lg font-normal mb-1`}
           >
             Todo
           </label>
@@ -122,14 +124,26 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
             value={title}
             autoFocus
             onChange={(e) => setTitle(e.target.value)}
-            className="p-5 border text-sm dark:border-[rgba(255,255,255,0.1)] bg-gray-50 outline-none rounded-lg dark:bg-dark_bg dark:text-white"
+            className={`p-5 border text-sm ${
+              userTheme === "default"
+                ? "bg-gray-50 text-black dark:text-white dark:bg-dark_bg dark:border-[rgba(255,255,255,0.1)]"
+                : `${
+                    blackText
+                      ? "bg-gray-50 text-black"
+                      : "text-white bg-dark_bg border-[rgba(255,255,255,0.1)]"
+                  }`
+            } outline-none rounded-lg`}
           />
         </div>
 
         <div className="flex flex-col mt-5">
           <label
             htmlFor="email"
-            className="text-xs font-medium text-black dark:text-white mb-1"
+            className={`${
+              userTheme === "default"
+                ? "text-black dark:text-white"
+                : `${blackText ? "text-black" : "text-white"}`
+            } p-0 m-0 text-sm font-normal mb-1`}
           >
             Description
           </label>
@@ -137,7 +151,15 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Your todo description"
-            className="p-3 border text-sm dark:border-[rgba(255,255,255,0.1)] bg-gray-50 outline-none rounded-lg dark:bg-dark_bg dark:text-white"
+            className={`p-3 border text-sm ${
+              userTheme === "default"
+                ? "bg-gray-50 text-black dark:text-white dark:bg-dark_bg dark:border-[rgba(255,255,255,0.1)]"
+                : `${
+                    blackText
+                      ? "bg-gray-50 text-black"
+                      : "text-white bg-dark_bg border-[rgba(255,255,255,0.1)]"
+                  }`
+            } outline-none rounded-lg`}
           />
         </div>
 
@@ -145,7 +167,13 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
           <button
             disabled={isDisabled}
             onClick={handleAddTodo}
-            className="px-5 py-2 bg-primary flex flex-row items-center justify-center text-white hover:opacity-70 duration-200 transition-opacity disabled:hover:opacity-100 text-sm font-medium disabled:cursor-not-allowed cursor-pointer disabled:text-[rgba(0,0,0,0.3)] disabled:dark:text-[rgba(255,255,255,0.3)] disabled:bg-gray-50 disabled:dark:bg-dark_bg rounded-lg"
+            className={`px-5 py-2 bg-primary flex flex-row items-center justify-center ${
+              userTheme === "default"
+                ? "disabled:text-[rgba(0,0,0,0.3)] disabled:dark:text-[rgba(255,255,255,0.3)] disabled:bg-gray-50 disabled:dark:bg-dark_bg"
+                : blackText
+                ? "disabled:text-[rgba(0,0,0,0.3)] disabled:bg-gray-50"
+                : "disabled:dark:bg-dark_bg"
+            } text-white hover:opacity-70 duration-200 transition-opacity disabled:hover:opacity-100 text-sm font-medium disabled:cursor-not-allowed cursor-pointer rounded-lg`}
           >
             Create
             {loading && (

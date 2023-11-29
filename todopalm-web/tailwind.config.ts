@@ -6,6 +6,16 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    'bg-coffee-bg', 'bg-coffee-accent',
+    'bg-forest-bg', 'bg-forest-accent',
+    'bg-ocean-bg', 'bg-ocean-accent',
+    'bg-desert-bg', 'bg-desert-accent',
+    'bg-urban-bg', 'bg-urban-accent',
+    'bg-sakura-bg', 'bg-sakura-accent',
+    'bg-polar-bg', 'bg-polar-accent',
+    'bg-vintage-bg', 'bg-vintage-accent',
+  ],
   theme: {
     extend: {
       backgroundImage: {

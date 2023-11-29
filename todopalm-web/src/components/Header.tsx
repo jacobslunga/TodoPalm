@@ -1,10 +1,11 @@
 "use client";
 
 import { userService } from "@/api/users";
-import Tooltip from "@/lib/util/Tooltip";
+import Tooltip from "@/components/util/Tooltip";
 import { shouldBeBlackText } from "@/lib/util/theme";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { List, Settings, User } from "react-feather";
 
@@ -14,6 +15,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ user, accessToken }) => {
+  const router = useRouter();
   const themeOptions = [
     { name: "Default", bg: "default" },
     { name: "Coffee Barista", bg: "coffee-bg", accent: "coffee-accent" },
@@ -27,7 +29,8 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
   ];
 
   async function handleThemeChange(theme: string) {
-    const res = await userService.setTheme(accessToken as string, theme);
+    await userService.setTheme(accessToken as string, theme);
+    router.refresh();
   }
 
   const userTheme = user.theme;
@@ -45,7 +48,7 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
         />
       </Link>
       <div className="flex flex-row items-center justify-center">
-        <Tooltip message="Me">
+        <Tooltip message="Profile">
           <Link href="/me/profile">
             {user && user.imageUrl ? (
               <Image
@@ -67,7 +70,7 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
             )}
           </Link>
         </Tooltip>
-        <div className="ml-5">
+        <div className="ml-5 flex flex-row items-center justify-center">
           <Tooltip message="Todo Lists">
             <Link href="/todo-lists">
               <List
@@ -76,6 +79,20 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
                     ? "text-black dark:text-white"
                     : `${blackText ? "text-black" : "text-white"}`
                 }`}
+                size={25}
+              />
+            </Link>
+          </Tooltip>
+        </div>
+        <div className="ml-5 flex flex-row items-center justify-center">
+          <Tooltip message="Settings">
+            <Link href="/settings">
+              <Settings
+                className={`${
+                  userTheme === "default"
+                    ? "text-black dark:text-white"
+                    : `${blackText ? "text-black" : "text-white"}`
+                } hover:rotate-[15deg] transition-transform duration-200 ease-in-out`}
                 size={25}
               />
             </Link>
@@ -92,30 +109,16 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
                 }`
           } ml-5 mr-5 h-[20px] w-[1.5px] rounded-xl`}
         />
-        <div>
-          <Tooltip message="Settings">
-            <Link href="/settings">
-              <Settings
-                className={`${
-                  userTheme === "default"
-                    ? "text-black dark:text-white"
-                    : `${blackText ? "text-black" : "text-white"}`
-                } hover:rotate-[15deg] transition-transform duration-200 ease-in-out`}
-                size={25}
-              />
-            </Link>
-          </Tooltip>
-        </div>
         <select
           className={`w-full ${
             userTheme === "default"
-              ? "text-[rgba(0,0,0,0.7)] dark:text-[rgba(255,255,255,0.7)]"
+              ? "text-[rgba(0,0,0,0.7)] bg-[rgba(0,0,0,0.1)] dark:bg-[rgba(255,255,255,0.1)] dark:text-[rgba(255,255,255,0.7)]"
               : `${
                   blackText
-                    ? "text-[rgba(0,0,0,0.7)]"
-                    : "text-[rgba(255,255,255,0.7)]"
+                    ? "text-[rgba(0,0,0,0.7)] bg-[rgba(0,0,0,0.1)]"
+                    : "text-[rgba(255,255,255,0.7)] bg-[rgba(255,255,255,0.1)]"
                 }`
-          } text-sm bg-transparent outline-none font-normal max-w-xs ml-5 active:bg-transparent border-none focus:border-none active:border-none focus:bg-transparent`}
+          } text-sm outline-none font-normal max-w-xs border-none focus:border-none active:border-none p-2 rounded-xl`}
           onChange={(e) => handleThemeChange(e.target.value)}
         >
           <option value="">Theme</option>

@@ -11,7 +11,7 @@ const Tooltip = ({
   const [show, setShow] = useState(false);
 
   return (
-    <div className="relative flex flex-col items-center group z-40">
+    <div className="relative flex flex-col items-center group z-50">
       <span
         className="flex justify-center"
         onMouseEnter={() => setShow(true)}
