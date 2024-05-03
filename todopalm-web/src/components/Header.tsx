@@ -33,7 +33,7 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
     router.refresh();
   }
 
-  const userTheme = user.theme;
+  const userTheme = user && user.theme;
   const blackText = shouldBeBlackText(userTheme);
 
   return (
@@ -54,8 +54,8 @@ const Header: FC<HeaderProps> = ({ user, accessToken }) => {
               <Image
                 src={user.imageUrl}
                 alt="User"
-                width={30}
-                height={30}
+                width={50}
+                height={50}
                 className="rounded-full"
               />
             ) : (

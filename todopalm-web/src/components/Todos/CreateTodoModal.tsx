@@ -175,7 +175,7 @@ const CreateTodoModal: FC<CreateTodoModalProps> = ({ user, accessToken }) => {
                 : "disabled:dark:bg-dark_bg"
             } text-white hover:opacity-70 duration-200 transition-opacity disabled:hover:opacity-100 text-sm font-medium disabled:cursor-not-allowed cursor-pointer rounded-lg`}
           >
-            Create
+            {loading ? "Creating" : "Create"}
             {loading && (
               <span className="loading loading-dots loading-xs ml-2"></span>
             )}

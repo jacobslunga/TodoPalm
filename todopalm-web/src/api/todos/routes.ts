@@ -4,4 +4,6 @@ export const TODOS_ROUTES = {
   UPDATE_TODO: (id: string) => `/todos/${id}`,
   DELETE_TODO: (id: string) => `/todos/${id}`,
   GET_TODOS: "/todos",
+  COMPLETE_TODO: (id: string) => `/todos/${id}/complete`,
+  UN_COMPLETE_TODO: (id: string) => `/todos/${id}/uncomplete`,
 };

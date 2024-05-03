@@ -40,6 +40,7 @@ export default async function TodoGroup() {
           imageUrl: userData.imageUrl,
           theme: userData.theme,
         }}
+        accessToken={session.accessToken}
       />
 
       <div

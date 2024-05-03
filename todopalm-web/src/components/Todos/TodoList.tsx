@@ -1,8 +1,10 @@
 "use client";
 
-import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { todoService } from "@/api/todos";
 import Tooltip from "@/components/util/Tooltip";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { shouldBeBlackText } from "@/lib/util/theme";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { Check, Filter, MoreVertical, PlusCircle } from "react-feather";
 
@@ -26,6 +28,7 @@ interface TodoListProps {
     imageUrl: string;
     theme: string;
   };
+  accessToken: string;
 }
 
 function getFormattedDate(): string {
@@ -57,14 +60,29 @@ function getFormattedDate(): string {
 const TodoList: FC<TodoListProps> = ({
   todos,
   user: { id, name, imageUrl, theme },
+  accessToken,
 }) => {
   useKeyboardShortcut("d", () => {
     const modal = document.getElementById("create_todo_modal") as any;
     modal?.showModal();
   });
 
+  const router = useRouter();
+
   const userTheme = theme;
   const blackText = shouldBeBlackText(userTheme);
+
+  const handleCompleteTodo = async (id: string) => {
+    const res = await todoService.completeTodo(accessToken, id);
+    console.log(res);
+    router.refresh();
+  };
+
+  const handleUnCompleteTodo = async (id: string) => {
+    const res = await todoService.unCompletetodo(accessToken, id);
+    console.log(res);
+    router.refresh();
+  };
 
   return (
     <div
@@ -193,7 +211,15 @@ const TodoList: FC<TodoListProps> = ({
                 <div className="flex flex-row items-start justify-start w-full">
                   <div className="flex flex-col items-center justify-center">
                     <p
-                      className={`text-[rgba(0,0,0,0.6)] dark:text-gray-400 font-semibold text-lg items-center justify-center`}
+                      className={`${
+                        userTheme === "default"
+                          ? "text-[rgba(0,0,0,0.6)] dark:text-gray-400"
+                          : `${
+                              blackText
+                                ? "text-[rgba(0,0,0,0.6)]"
+                                : "dark:text-gray-400"
+                            }`
+                      } font-semibold text-lg items-center justify-center`}
                     >
                       {i + 1}
                     </p>
@@ -204,46 +230,70 @@ const TodoList: FC<TodoListProps> = ({
                       todo.isCompleted && "line-through"
                     } flex flex-col items-start justify-center ml-3`}
                   >
-                    <h4 className="font-semibold text-black dark:text-white text-lg">
+                    <h4
+                      className={`font-semibold ${
+                        userTheme === "default"
+                          ? "text-white bg-black dark:text-black dark:bg-white"
+                          : `${
+                              blackText
+                                ? "text-white bg-black"
+                                : "text-black bg-white"
+                            }`
+                      }  text-lg`}
+                    >
                       {todo.title}
                     </h4>
-                    <p className="text-xs text-black dark:text-white">
+                    <p
+                      className={`text-xs ${
+                        userTheme === "default"
+                          ? "text-white bg-black dark:text-black dark:bg-white"
+                          : `${
+                              blackText
+                                ? "text-white bg-black"
+                                : "text-black bg-white"
+                            }`
+                      }`}
+                    >
                       {todo.content}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex flex-row items-center justify-center">
-                  <button className="border border-gray-400 dark:border-[rgba(255,255,255,0.2)] rounded-lg p-2 group">
+                  <button
+                    onClick={() => {
+                      if (todo.isCompleted) {
+                        handleUnCompleteTodo(todo.id);
+                      } else {
+                        handleCompleteTodo(todo.id);
+                      }
+                    }}
+                    className={`border ${
+                      userTheme === "default"
+                        ? "border-gray-400 dark:border-[rgba(255,255,255,0.2)]"
+                        : `${
+                            blackText
+                              ? "border-gray-400"
+                              : "border-[rgba(255,255,255,0.2)]"
+                          }`
+                    } rounded-lg p-2 group`}
+                  >
                     <Check
                       className={`${
                         !todo.isCompleted
                           ? "group-hover:opacity-100"
-                          : "opacity-0 group-hover:opacity-0"
+                          : "opacity-100 group-hover:opacity-0"
                       }
                       text-green-500 opacity-0 dark:text-green-400 transition-all duration-200 ease-in-out m-0 p-0
                       `}
                       size={15}
                     />
                   </button>
-                  <div className="dropdown dropdown-left">
-                    <MoreVertical
-                      tabIndex={0}
-                      size={20}
-                      className="text-[rgba(0,0,0,0.5)] cursor-pointer hover:text-black transition-colors ml-5 duration-200 ease-linear dark:text-[rgba(255,255,255,0.5)] dark:hover:text-white m-0 p-0"
-                    />
-                    <ul
-                      tabIndex={0}
-                      className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box"
-                    >
-                      <li>
-                        <a>Item 1</a>
-                      </li>
-                      <li>
-                        <a>Item 2</a>
-                      </li>
-                    </ul>
-                  </div>
+                  <MoreVertical
+                    tabIndex={0}
+                    size={20}
+                    className="text-[rgba(0,0,0,0.5)] cursor-pointer hover:text-black transition-colors ml-5 duration-200 ease-linear dark:text-[rgba(255,255,255,0.5)] dark:hover:text-white m-0 p-0"
+                  />
                 </div>
               </div>
             ))}

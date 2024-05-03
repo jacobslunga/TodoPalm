@@ -5,6 +5,8 @@ import {
   getTodoById,
   getTodos,
   updateTodo,
+  completeTodo,
+  unCompleteTodo,
 } from "../controllers/todos";
 
 const todosRouter = Router();
@@ -15,6 +17,8 @@ todosRouter.get("/:id", getTodoById);
 
 // PUT
 todosRouter.put("/:id", updateTodo);
+todosRouter.put("/:id/complete", completeTodo);
+todosRouter.put("/:id/uncomplete", unCompleteTodo);
 
 // POST
 todosRouter.post("/", createTodo);

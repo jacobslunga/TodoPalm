@@ -53,6 +53,54 @@ async function createTodo(
   }
 }
 
+async function updateTodo(accessToken: string, id: string) {
+  try {
+    const res = await api.put(TODOS_ROUTES.UPDATE_TODO(id), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+}
+
+async function completeTodo(accessToken: string, id: string) {
+  try {
+    const res = await api.put(TODOS_ROUTES.COMPLETE_TODO(id), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function unCompletetodo(accessToken: string, id: string) {
+  try {
+    const res = await api.put(TODOS_ROUTES.UN_COMPLETE_TODO(id), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export const todoService = {
   createTodo,
+  getTodo,
+  getTodos,
+  updateTodo,
+  completeTodo,
+  unCompletetodo,
 };

@@ -91,6 +91,52 @@ export async function createTodo(
   }
 }
 
+// PUT /api/v1/todos/:id/complete
+export async function completeTodo(
+  req: Request,
+  res: Response
+): Promise<Response> {
+  try {
+    const { id } = req.params;
+
+    const todo = await prisma.todo.update({
+      where: {
+        id,
+      },
+      data: {
+        isCompleted: true,
+      },
+    });
+
+    return res.status(200).json(todo);
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+// PUT /api/v1/todos/:id/uncomplete
+export async function unCompleteTodo(
+  req: Request,
+  res: Response
+): Promise<Response> {
+  try {
+    const { id } = req.params;
+
+    const todo = await prisma.todo.update({
+      where: {
+        id,
+      },
+      data: {
+        isCompleted: false,
+      },
+    });
+
+    return res.status(200).json(todo);
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
 // PUT /api/v1/todos/:id
 export async function updateTodo(
   req: Request,
