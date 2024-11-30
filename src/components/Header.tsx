@@ -1,4 +1,4 @@
-import ProfileDialog from "@/components/ProfileDialog";
+import HistoryDialog from "@/components/HistoryDialog";
 import ThemeSelector from "@/components/ThemeSelector";
 import { format } from "date-fns/format";
 import { FC, useEffect, useState } from "react";
@@ -41,7 +41,7 @@ const Header: FC = () => {
 
       {/* Profile and Theme */}
       <div className="flex flex-row items-center justify-center space-x-4">
-        <ProfileDialog />
+        <HistoryDialog />
         <ThemeSelector />
       </div>
     </nav>

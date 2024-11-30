@@ -28,8 +28,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Todo } from "@/types";
-import { Check, Clock, Trash, XCircle } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Clock, Sliders, Trash, XCircle } from "lucide-react";
 import { FC, useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 
 const HomePage: FC = () => {
@@ -45,6 +48,9 @@ const HomePage: FC = () => {
   const [filter, setFilter] = useState<"All" | "Completed" | "Pending">("All");
   const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [isValidTime, setIsValidTime] = useState(true);
+  const [sortCriteria, setSortCriteria] = useState<"priority" | "dueTime">(
+    "priority"
+  );
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -68,6 +74,7 @@ const HomePage: FC = () => {
     };
 
     setTodos(updatedTodos as Record<string, Todo[]>);
+    toast.success("Todo added successfully!");
     setNewTodo("");
     setDueTime("");
     setPriority("Medium");
@@ -97,6 +104,7 @@ const HomePage: FC = () => {
       [today]: todos[today].filter((todo) => todo.id !== id),
     };
     setTodos(updatedTodos);
+    toast.error("Todo removed.");
   };
 
   const validateTime = (time: string) => {
@@ -106,21 +114,47 @@ const HomePage: FC = () => {
     setIsValidTime(selectedTime > new Date());
   };
 
-  const filteredTodos = todos[today]?.filter((todo) => {
-    if (filter === "All") return true;
-    if (filter === "Completed") return todo.completed;
-    if (filter === "Pending") return !todo.completed;
-  });
+  const filteredTodos = todos[today]
+    ?.filter((todo) => {
+      if (filter === "All") return true;
+      if (filter === "Completed") return todo.completed;
+      if (filter === "Pending") return !todo.completed;
+    })
+    ?.sort((a, b) => {
+      if (sortCriteria === "priority") {
+        const priorityOrder: Record<"High" | "Medium" | "Low", number> = {
+          High: 1,
+          Medium: 2,
+          Low: 3,
+        };
+
+        const priorityA = priorityOrder[a.priority || "Medium"];
+        const priorityB = priorityOrder[b.priority || "Medium"];
+
+        if (priorityA !== priorityB) return priorityA - priorityB;
+      }
+
+      if (sortCriteria === "dueTime") {
+        if (a.dueTime && b.dueTime) {
+          return a.dueTime.localeCompare(b.dueTime);
+        }
+
+        if (a.dueTime) return -1;
+        if (b.dueTime) return 1;
+      }
+
+      return 0;
+    });
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      console.log("Enter");
       handleAddTodo();
     }
   };
 
   return (
-    <div className="h-screen w-screen px-8 flex flex-col items-center justify-start py-4">
+    <div className="h-screen w-screen px-8 flex flex-col items-center justify-start py-4 overflow-x-hidden">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="w-full max-w-4xl space-y-6 mt-10">
         {/* Todo Input */}
         <div className="flex flex-col space-y-10">
@@ -187,26 +221,41 @@ const HomePage: FC = () => {
 
         <Separator />
 
-        {/* Filter Buttons */}
-        <div className="flex space-x-4 mb-4">
-          <Button
-            variant={filter === "All" ? "default" : "outline"}
-            onClick={() => setFilter("All")}
+        {/* Filter & Sort Buttons */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex space-x-4">
+            <Button
+              variant={filter === "All" ? "default" : "outline"}
+              onClick={() => setFilter("All")}
+            >
+              All
+            </Button>
+            <Button
+              variant={filter === "Pending" ? "default" : "outline"}
+              onClick={() => setFilter("Pending")}
+            >
+              Pending
+            </Button>
+            <Button
+              variant={filter === "Completed" ? "default" : "outline"}
+              onClick={() => setFilter("Completed")}
+            >
+              Completed
+            </Button>
+          </div>
+          <Select
+            value={sortCriteria}
+            onValueChange={(value) => setSortCriteria(value as any)}
           >
-            All
-          </Button>
-          <Button
-            variant={filter === "Pending" ? "default" : "outline"}
-            onClick={() => setFilter("Pending")}
-          >
-            Pending
-          </Button>
-          <Button
-            variant={filter === "Completed" ? "default" : "outline"}
-            onClick={() => setFilter("Completed")}
-          >
-            Completed
-          </Button>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+              <Sliders className="ml-2 h-4 w-4" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="priority">Sort by Priority</SelectItem>
+              <SelectItem value="dueTime">Sort by Due Time</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Todo Table */}
@@ -222,87 +271,94 @@ const HomePage: FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTodos?.map((todo, index) => (
-              <TableRow
-                key={todo.id}
-                className={
-                  todo.dueTime &&
-                  new Date(`${today}T${todo.dueTime}`) < new Date() &&
-                  !todo.completed
-                    ? "bg-red-100 dark:bg-red-950/50"
-                    : ""
-                }
-              >
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{todo.text}</TableCell>
-                <TableCell>{todo.dueTime || "No Time"}</TableCell>
-                <TableCell
-                  className={`${
-                    todo.priority === "High"
-                      ? "text-red-600"
-                      : todo.priority === "Medium"
-                      ? "text-yellow-600"
-                      : "text-green-600"
-                  }`}
+            <AnimatePresence>
+              {filteredTodos.map((todo, index) => (
+                <motion.tr
+                  key={todo.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className={
+                    todo.dueTime &&
+                    new Date(`${today}T${todo.dueTime}`) < new Date() &&
+                    !todo.completed
+                      ? "bg-red-100 dark:bg-red-950/50"
+                      : ""
+                  }
                 >
-                  {todo.priority}
-                </TableCell>
-                <TableCell>
-                  {todo.completed ? (
-                    <div>
-                      <div>Completed</div>
-                      <div className="text-sm text-muted-foreground">
-                        {todo.completionTimestamp
-                          ? new Date(todo.completionTimestamp).toLocaleString()
-                          : "No Time"}
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{todo.text}</TableCell>
+                  <TableCell>{todo.dueTime || "No Time"}</TableCell>
+                  <TableCell
+                    className={`${
+                      todo.priority === "High"
+                        ? "text-red-600"
+                        : todo.priority === "Medium"
+                        ? "text-yellow-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {todo.priority}
+                  </TableCell>
+                  <TableCell>
+                    {todo.completed ? (
+                      <div>
+                        <div>Completed</div>
+                        <div className="text-sm text-muted-foreground">
+                          {todo.completionTimestamp
+                            ? new Date(
+                                todo.completionTimestamp
+                              ).toLocaleString()
+                            : "No Time"}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    "Not Completed"
-                  )}
-                </TableCell>
-                <TableCell className="space-x-2">
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild className="z-50">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() => toggleTodo(todo.id)}
-                        >
-                          {todo.completed ? (
-                            <XCircle className="w-4 h-4 text-red-600" />
-                          ) : (
-                            <Check className="w-4 h-4 text-green-600" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent autoFocus={false}>
-                        {todo.completed
-                          ? "Mark as Not Completed"
-                          : "Mark as Completed"}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild className="z-50">
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() => removeTodo(todo.id)}
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent autoFocus={false}>
-                        Remove Todo
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-              </TableRow>
-            ))}
+                    ) : (
+                      "Not Completed"
+                    )}
+                  </TableCell>
+                  <TableCell className="space-x-2">
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild className="z-50">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => toggleTodo(todo.id)}
+                          >
+                            {todo.completed ? (
+                              <XCircle className="w-4 h-4 text-red-600" />
+                            ) : (
+                              <Check className="w-4 h-4 text-green-600" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent autoFocus={false}>
+                          {todo.completed
+                            ? "Mark as Not Completed"
+                            : "Mark as Completed"}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild className="z-50">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => removeTodo(todo.id)}
+                          >
+                            <Trash className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent autoFocus={false}>
+                          Remove Todo
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                </motion.tr>
+              ))}
+            </AnimatePresence>
           </TableBody>
         </Table>
       </div>
