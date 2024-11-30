@@ -25,7 +25,7 @@ const Header: FC = () => {
       <div className="flex flex-row select-none items-center justify-center space-x-5">
         <div className="flex flex-row items-center justify-center space-x-2">
           <img
-            src="/todopalm-logo.png"
+            src="/TodoPalm/todopalm-logo.png"
             alt="Logo"
             className="w-10 h-10 rounded-full"
           />
