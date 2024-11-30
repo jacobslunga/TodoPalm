@@ -56,9 +56,18 @@ const HistoryDialog: FC = () => {
   const removeTodo = (id: string) => {
     const updatedHistory = { ...history };
     const date = selectedDate as string;
+
+    // Filter out the todo with the given ID
     updatedHistory[date] = updatedHistory[date].filter(
       (todo) => todo.id !== id
     );
+
+    // If there are no todos left for the date, remove the date key entirely
+    if (updatedHistory[date].length === 0) {
+      delete updatedHistory[date];
+      setSelectedDate(null); // Go back to the calendar grid if there are no todos
+    }
+
     setHistory(updatedHistory);
     localStorage.setItem("todos", JSON.stringify(updatedHistory));
   };
