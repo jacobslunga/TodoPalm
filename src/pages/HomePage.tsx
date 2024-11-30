@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -111,18 +112,26 @@ const HomePage: FC = () => {
     if (filter === "Pending") return !todo.completed;
   });
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      console.log("Enter");
+      handleAddTodo();
+    }
+  };
+
   return (
     <div className="h-screen w-screen px-8 flex flex-col items-center justify-start py-4">
       <div className="w-full max-w-4xl space-y-6 mt-10">
         {/* Todo Input */}
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-10">
           <div className="flex items-center space-x-4">
             <input
               type="text"
-              className="w-full p-2 border-b text-6xl bg-transparent outline-none placeholder-foreground/40"
+              className="w-full p-2 text-6xl bg-transparent outline-none placeholder-foreground/40"
               placeholder="Add a new todo..."
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <Button
               size="mega"
@@ -136,7 +145,7 @@ const HomePage: FC = () => {
             {/* Time Picker */}
             <Popover open={timePickerOpen} onOpenChange={setTimePickerOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" className="font-normal">
                   {dueTime ? dueTime : "Select Time"}
                   <Clock className="ml-2 h-4 w-4" />
                 </Button>
@@ -176,6 +185,8 @@ const HomePage: FC = () => {
           </div>
         </div>
 
+        <Separator />
+
         {/* Filter Buttons */}
         <div className="flex space-x-4 mb-4">
           <Button
@@ -199,7 +210,7 @@ const HomePage: FC = () => {
         </div>
 
         {/* Todo Table */}
-        <Table>
+        <Table className="rounded-lg bg-foreground/5 p-5 mb-20">
           <TableHeader>
             <TableRow>
               <TableHead>#</TableHead>
@@ -218,7 +229,7 @@ const HomePage: FC = () => {
                   todo.dueTime &&
                   new Date(`${today}T${todo.dueTime}`) < new Date() &&
                   !todo.completed
-                    ? "bg-red-100"
+                    ? "bg-red-100 dark:bg-red-950/50"
                     : ""
                 }
               >

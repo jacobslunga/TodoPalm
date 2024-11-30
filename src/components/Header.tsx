@@ -20,7 +20,7 @@ const Header: FC = () => {
   }, [pageTitle]);
 
   return (
-    <nav className="flex flex-row max-w-4xl items-center justify-between bg-background h-20 sticky top-0 w-full px-4">
+    <nav className="flex flex-row max-w-4xl items-center justify-between bg-background p-3 z-50 sticky top-0 w-full px-4">
       {/* Editable Page Title */}
       <div className="flex flex-row select-none items-center justify-center space-x-5">
         <div className="flex flex-row items-center justify-center space-x-2">

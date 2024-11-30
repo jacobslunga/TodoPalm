@@ -13,7 +13,7 @@ const ProfileDialog: FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Profile</Button>
+        <Button variant="outline">History</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
