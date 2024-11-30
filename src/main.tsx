@@ -5,9 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { routes } from "./routes";
 
-const router = createBrowserRouter(routes, {
-  basename: "/TodoPalm",
-});
+const router = createBrowserRouter(routes);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
