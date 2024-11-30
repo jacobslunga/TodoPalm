@@ -114,37 +114,38 @@ const HomePage: FC = () => {
     setIsValidTime(selectedTime > new Date());
   };
 
-  const filteredTodos = todos[today]
-    ?.filter((todo) => {
-      if (filter === "All") return true;
-      if (filter === "Completed") return todo.completed;
-      if (filter === "Pending") return !todo.completed;
-    })
-    ?.sort((a, b) => {
-      if (sortCriteria === "priority") {
-        const priorityOrder: Record<"High" | "Medium" | "Low", number> = {
-          High: 1,
-          Medium: 2,
-          Low: 3,
-        };
+  const filteredTodos =
+    todos[today]
+      ?.filter((todo) => {
+        if (filter === "All") return true;
+        if (filter === "Completed") return todo.completed;
+        if (filter === "Pending") return !todo.completed;
+      })
+      ?.sort((a, b) => {
+        if (sortCriteria === "priority") {
+          const priorityOrder: Record<"High" | "Medium" | "Low", number> = {
+            High: 1,
+            Medium: 2,
+            Low: 3,
+          };
 
-        const priorityA = priorityOrder[a.priority || "Medium"];
-        const priorityB = priorityOrder[b.priority || "Medium"];
+          const priorityA = priorityOrder[a.priority || "Medium"];
+          const priorityB = priorityOrder[b.priority || "Medium"];
 
-        if (priorityA !== priorityB) return priorityA - priorityB;
-      }
-
-      if (sortCriteria === "dueTime") {
-        if (a.dueTime && b.dueTime) {
-          return a.dueTime.localeCompare(b.dueTime);
+          if (priorityA !== priorityB) return priorityA - priorityB;
         }
 
-        if (a.dueTime) return -1;
-        if (b.dueTime) return 1;
-      }
+        if (sortCriteria === "dueTime") {
+          if (a.dueTime && b.dueTime) {
+            return a.dueTime.localeCompare(b.dueTime);
+          }
 
-      return 0;
-    });
+          if (a.dueTime) return -1;
+          if (b.dueTime) return 1;
+        }
+
+        return 0;
+      }) || [];
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -153,15 +154,15 @@ const HomePage: FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen px-8 flex flex-col items-center justify-start py-4 overflow-x-hidden">
+    <div className="min-h-screen overflow-auto w-screen px-4 md:px-8 flex flex-col items-center py-4 overflow-x-hidden">
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="w-full max-w-4xl space-y-6 mt-10">
+      <div className="md:w-5/6 lg:w-2/3 space-y-6 mt-20">
         {/* Todo Input */}
-        <div className="flex flex-col space-y-10">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col md:space-y-10 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
             <input
               type="text"
-              className="w-full p-2 text-6xl bg-transparent outline-none placeholder-foreground/40"
+              className="w-full p-2 text-2xl md:text-4xl lg:text-6xl bg-transparent outline-none placeholder-foreground/40"
               placeholder="Add a new todo..."
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
@@ -171,15 +172,19 @@ const HomePage: FC = () => {
               size="mega"
               onClick={handleAddTodo}
               disabled={!newTodo.trim() || !isValidTime}
+              className="w-full md:w-auto"
             >
               Add
             </Button>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
             {/* Time Picker */}
             <Popover open={timePickerOpen} onOpenChange={setTimePickerOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="font-normal">
+                <Button
+                  variant="outline"
+                  className="font-normal w-full md:w-auto"
+                >
                   {dueTime ? dueTime : "Select Time"}
                   <Clock className="ml-2 h-4 w-4" />
                 </Button>
@@ -207,7 +212,7 @@ const HomePage: FC = () => {
               value={priority}
               onValueChange={(value) => setPriority(value as any)}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
               <SelectContent>
@@ -222,8 +227,8 @@ const HomePage: FC = () => {
         <Separator />
 
         {/* Filter & Sort Buttons */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex space-x-4">
+        <div className="flex flex-col md:flex-row md:justify-between items-center mb-4 space-y-4 md:space-y-0">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant={filter === "All" ? "default" : "outline"}
               onClick={() => setFilter("All")}
@@ -247,7 +252,7 @@ const HomePage: FC = () => {
             value={sortCriteria}
             onValueChange={(value) => setSortCriteria(value as any)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder="Sort by" />
               <Sliders className="ml-2 h-4 w-4" />
             </SelectTrigger>
@@ -259,108 +264,112 @@ const HomePage: FC = () => {
         </div>
 
         {/* Todo Table */}
-        <Table className="rounded-lg bg-foreground/5 p-5 mb-20">
-          <TableHeader>
-            <TableRow>
-              <TableHead>#</TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Due Time</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <AnimatePresence>
-              {filteredTodos.map((todo, index) => (
-                <motion.tr
-                  key={todo.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className={
-                    todo.dueTime &&
-                    new Date(`${today}T${todo.dueTime}`) < new Date() &&
-                    !todo.completed
-                      ? "bg-red-100 dark:bg-red-950/50"
-                      : ""
-                  }
-                >
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{todo.text}</TableCell>
-                  <TableCell>{todo.dueTime || "No Time"}</TableCell>
-                  <TableCell
-                    className={`${
-                      todo.priority === "High"
-                        ? "text-red-600"
-                        : todo.priority === "Medium"
-                        ? "text-yellow-600"
-                        : "text-green-600"
-                    }`}
+        <div className="overflow-auto">
+          <Table className="rounded-lg bg-foreground/5 p-5 mb-20 w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>#</TableHead>
+                <TableHead>Task</TableHead>
+                <TableHead>Due Time</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <AnimatePresence>
+                {filteredTodos.map((todo, index) => (
+                  <motion.tr
+                    key={todo.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={
+                      todo.dueTime &&
+                      new Date(`${today}T${todo.dueTime}`) < new Date() &&
+                      !todo.completed
+                        ? "bg-red-100 dark:bg-red-950/50"
+                        : ""
+                    }
                   >
-                    {todo.priority}
-                  </TableCell>
-                  <TableCell>
-                    {todo.completed ? (
-                      <div>
-                        <div>Completed</div>
-                        <div className="text-sm text-muted-foreground">
-                          {todo.completionTimestamp
-                            ? new Date(
-                                todo.completionTimestamp
-                              ).toLocaleString()
-                            : "No Time"}
+                    <TableCell className="text-sm">{index + 1}</TableCell>
+                    <TableCell className="text-sm">{todo.text}</TableCell>
+                    <TableCell className="text-sm">
+                      {todo.dueTime || "No Time"}
+                    </TableCell>
+                    <TableCell
+                      className={`text-sm ${
+                        todo.priority === "High"
+                          ? "text-red-600"
+                          : todo.priority === "Medium"
+                          ? "text-yellow-600"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {todo.priority}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {todo.completed ? (
+                        <div>
+                          <div>Completed</div>
+                          <div className="text-xs text-muted-foreground">
+                            {todo.completionTimestamp
+                              ? new Date(
+                                  todo.completionTimestamp
+                                ).toLocaleString()
+                              : "No Time"}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      "Not Completed"
-                    )}
-                  </TableCell>
-                  <TableCell className="space-x-2">
-                    <TooltipProvider delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild className="z-50">
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => toggleTodo(todo.id)}
-                          >
-                            {todo.completed ? (
-                              <XCircle className="w-4 h-4 text-red-600" />
-                            ) : (
-                              <Check className="w-4 h-4 text-green-600" />
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent autoFocus={false}>
-                          {todo.completed
-                            ? "Mark as Not Completed"
-                            : "Mark as Completed"}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild className="z-50">
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => removeTodo(todo.id)}
-                          >
-                            <Trash className="w-4 h-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent autoFocus={false}>
-                          Remove Todo
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </TableCell>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-          </TableBody>
-        </Table>
+                      ) : (
+                        "Not Completed"
+                      )}
+                    </TableCell>
+                    <TableCell className="space-x-2">
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild className="z-50">
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => toggleTodo(todo.id)}
+                            >
+                              {todo.completed ? (
+                                <XCircle className="w-4 h-4 text-red-600" />
+                              ) : (
+                                <Check className="w-4 h-4 text-green-600" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent autoFocus={false}>
+                            {todo.completed
+                              ? "Mark as Not Completed"
+                              : "Mark as Completed"}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild className="z-50">
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => removeTodo(todo.id)}
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent autoFocus={false}>
+                            Remove Todo
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

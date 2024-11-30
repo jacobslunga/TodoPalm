@@ -20,7 +20,7 @@ const Header: FC = () => {
   }, [pageTitle]);
 
   return (
-    <nav className="flex flex-row max-w-4xl items-center justify-between bg-background p-3 z-50 sticky top-0 w-full px-4">
+    <nav className="flex flex-row items-center justify-between bg-background p-3 z-50 fixed top-0 w-screen md:w-5/6 lg:w-2/3 px-4">
       {/* Editable Page Title */}
       <div className="flex flex-row select-none items-center justify-center space-x-5">
         <div className="flex flex-row items-center justify-center space-x-2">
@@ -32,9 +32,9 @@ const Header: FC = () => {
           <h1 className="text-lg font-semibold">TodoPalm.</h1>
         </div>
 
-        <p className="text-foreground/50">\</p>
+        <p className="text-foreground/50 hidden md:flex">\</p>
 
-        <div className="text-xs font-medium rounded-xl bg-foreground/5 p-3 border mesh">
+        <div className="text-xs font-medium hidden md:flex rounded-xl bg-foreground/5 p-3 border mesh">
           {formattedDate}
         </div>
       </div>
